@@ -365,6 +365,8 @@ let appState = {
   weeklyCompletion: {},
   workoutInProgress: false,
   currentExerciseIndex: 0,
+  currentSetIndex: 0,
+  isResting: false,
   timerRunning: false,
   timerSeconds: 0,
   timerInterval: null,
@@ -643,48 +645,44 @@ function startWorkout() {
   const dayWorkout = phaseData.days[workoutDay];
 
   appState.workoutInProgress = true;
-  appState.currentExerciseIndex = -1; // Start with warmup
+  appState.currentExerciseIndex = 0; // Start at first exercise (skip warmup in guided mode)
+  appState.currentSetIndex = 0;
+  appState.isResting = false;
   appState.currentWorkoutData = {
-    warmup: workoutProgram.warmup,
-    main: dayWorkout.exercises,
-    totalExercises: workoutProgram.warmup.length + dayWorkout.exercises.length,
+    exercises: dayWorkout.exercises,
+    totalExercises: dayWorkout.exercises.length,
+    warmupComplete: false,
   };
 
   showView("workout");
-  nextExercise();
+  showCurrentExercise();
 }
 
-function nextExercise() {
-  appState.currentExerciseIndex++;
+function showCurrentExercise() {
   const data = appState.currentWorkoutData;
-  const totalExercises = data.totalExercises;
 
-  if (appState.currentExerciseIndex >= totalExercises) {
+  if (appState.currentExerciseIndex >= data.totalExercises) {
     completeWorkout();
     return;
   }
 
-  // Update progress
-  const progress = (appState.currentExerciseIndex / totalExercises) * 100;
-  document.getElementById("progressBar").style.width = progress + "%";
+  const exercise = data.exercises[appState.currentExerciseIndex];
+  const totalSets = parseInt(exercise.sets) || 1;
+  const currentSet = appState.currentSetIndex + 1;
 
-  // Get current exercise
-  let exercise;
-  let isWarmup = appState.currentExerciseIndex < data.warmup.length;
+  // Update progress bar
+  const overallProgress =
+    ((appState.currentExerciseIndex + currentSet / totalSets) /
+      data.totalExercises) *
+    100;
+  document.getElementById("progressBar").style.width = overallProgress + "%";
 
-  if (isWarmup) {
-    exercise = data.warmup[appState.currentExerciseIndex];
-  } else {
-    exercise = data.main[appState.currentExerciseIndex - data.warmup.length];
-  }
-
-  // Display exercise
+  // Display current exercise and set
   const display = document.getElementById("currentExerciseDisplay");
-  const queueContainer = document.getElementById("exerciseQueue");
 
   let exerciseText = "";
   if (exercise.type === "circuit") {
-    exerciseText = exercise.name;
+    exerciseText = "Complete the circuit";
   } else if (exercise.duration) {
     exerciseText = exercise.duration;
   } else if (exercise.reps) {
@@ -697,56 +695,157 @@ function nextExercise() {
     : "";
 
   display.innerHTML = `
-        <h3>${isWarmup ? "🔥 Warm-up" : "💪 Main Set"}</h3>
+        <h3>Exercise ${appState.currentExerciseIndex + 1}/${data.totalExercises}</h3>
         <h2 style="font-size: 1.8rem; margin: 15px 0;">${exercise.name}</h2>
-        <p style="font-size: 1.3rem;">${exerciseText}</p>
-        ${exercise.sets ? `<p style="opacity: 0.8;">Sets: ${exercise.sets}</p>` : ""}
+        <p style="font-size: 1.5rem; color: #fbbf24;">Set ${currentSet}/${totalSets}</p>
+        <p style="font-size: 1.3rem; margin-top: 10px;">${exerciseText}</p>
         ${noteHTML}
     `;
 
-  // Show upcoming exercises
-  let queueHTML =
-    '<h3 style="margin-bottom: 10px;">Up Next:</h3><ul class="exercise-list">';
-  for (
-    let i = appState.currentExerciseIndex + 1;
-    i < Math.min(appState.currentExerciseIndex + 4, totalExercises);
-    i++
-  ) {
-    let nextEx =
-      i < data.warmup.length
-        ? data.warmup[i]
-        : data.main[i - data.warmup.length];
-    queueHTML += `<li class="exercise-item" style="font-size: 0.9rem;">${nextEx.name}</li>`;
-  }
-  queueHTML += "</ul>";
-  queueContainer.innerHTML = queueHTML;
-
-  // Voice announcement
-  if (appState.voiceEnabled) {
-    let voiceText = `${isWarmup ? "Warm up. " : ""}${exercise.name}. ${exerciseText}`;
-    if (exercise.note) {
-      voiceText += `. ${exercise.note}`;
-    }
-    speak(voiceText);
-  }
-
-  // Reset timer
+  // Update timer display
   stopTimer();
   appState.timerSeconds = 0;
   updateTimerDisplay();
+  document.getElementById("timerDisplay").style.color = "#818cf8";
 
-  // Auto-start timer for timed exercises
-  if (exercise.duration || exercise.type === "timed") {
-    const seconds =
-      typeof exercise.duration === "number"
-        ? exercise.duration
-        : parseInt(exercise.duration);
-    if (!isNaN(seconds)) {
-      appState.timerSeconds = seconds;
-      updateTimerDisplay();
-      startTimer();
-    }
+  // Update buttons
+  updateWorkoutButtons("exercise");
+
+  // Voice announcement (minimal - just exercise and set)
+  if (appState.voiceEnabled && currentSet === 1) {
+    speak(`${exercise.name}`);
   }
+}
+
+function markSetComplete() {
+  const data = appState.currentWorkoutData;
+  const exercise = data.exercises[appState.currentExerciseIndex];
+  const totalSets = parseInt(exercise.sets) || 1;
+
+  appState.currentSetIndex++;
+
+  // Check if all sets for this exercise are done
+  if (appState.currentSetIndex >= totalSets) {
+    // Exercise complete - longer rest before next exercise
+    startExerciseRest();
+  } else {
+    // More sets to do - normal rest between sets
+    startSetRest();
+  }
+}
+
+function startSetRest() {
+  const exercise =
+    appState.currentWorkoutData.exercises[appState.currentExerciseIndex];
+  const restTime = exercise.rest || 90; // Default 90s if not specified
+
+  appState.isResting = true;
+  appState.timerSeconds = restTime;
+
+  const display = document.getElementById("currentExerciseDisplay");
+  display.innerHTML = `
+        <h3>💨 Rest Between Sets</h3>
+        <h2 style="font-size: 1.8rem; margin: 15px 0;">${exercise.name}</h2>
+        <p style="font-size: 1.3rem;">Set ${appState.currentSetIndex + 1}/${parseInt(exercise.sets)} coming up...</p>
+    `;
+
+  document.getElementById("timerDisplay").style.color = "#10b981";
+  updateTimerDisplay();
+  updateWorkoutButtons("rest");
+  startTimer();
+}
+
+function startExerciseRest() {
+  const EXERCISE_REST_TIME = 180; // 3 minutes between exercises
+  const currentExercise =
+    appState.currentWorkoutData.exercises[appState.currentExerciseIndex];
+  const nextExerciseIndex = appState.currentExerciseIndex + 1;
+
+  appState.isResting = true;
+  appState.timerSeconds = EXERCISE_REST_TIME;
+
+  const display = document.getElementById("currentExerciseDisplay");
+
+  if (nextExerciseIndex < appState.currentWorkoutData.totalExercises) {
+    const nextExercise =
+      appState.currentWorkoutData.exercises[nextExerciseIndex];
+    display.innerHTML = `
+            <h3>✅ ${currentExercise.name} Complete!</h3>
+            <h2 style="font-size: 1.8rem; margin: 15px 0;">Rest Before Next Exercise</h2>
+            <p style="font-size: 1.3rem;">Up Next: ${nextExercise.name}</p>
+        `;
+  } else {
+    display.innerHTML = `
+            <h3>✅ ${currentExercise.name} Complete!</h3>
+            <h2 style="font-size: 1.8rem; margin: 15px 0;">Final Rest</h2>
+            <p style="font-size: 1.3rem;">Almost done! 💪</p>
+        `;
+  }
+
+  document.getElementById("timerDisplay").style.color = "#8b5cf6";
+  updateTimerDisplay();
+  updateWorkoutButtons("rest");
+  startTimer();
+}
+
+function skipRest() {
+  stopTimer();
+  handleRestComplete();
+}
+
+function handleRestComplete() {
+  const data = appState.currentWorkoutData;
+
+  // Check if we just finished rest between sets or between exercises
+  if (
+    appState.currentSetIndex >=
+    parseInt(data.exercises[appState.currentExerciseIndex].sets)
+  ) {
+    // Move to next exercise
+    appState.currentExerciseIndex++;
+    appState.currentSetIndex = 0;
+  }
+
+  appState.isResting = false;
+  showCurrentExercise();
+}
+
+function updateWorkoutButtons(mode) {
+  const controls = document.querySelector(".controls");
+
+  if (mode === "exercise") {
+    controls.innerHTML = `
+            <button class="btn btn-success" onclick="markSetComplete()">✓ Set Done</button>
+            <button class="btn btn-danger" onclick="endWorkout()">End Workout</button>
+        `;
+  } else if (mode === "rest") {
+    controls.innerHTML = `
+            <button class="btn" onclick="skipRest()">⏭️ Skip Rest</button>
+            <button class="btn btn-danger" onclick="endWorkout()">End Workout</button>
+        `;
+  }
+}
+
+function playBeep() {
+  // Create a short beep sound using Web Audio API
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.frequency.value = 800; // Frequency in Hz
+  oscillator.type = "sine";
+
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(
+    0.01,
+    audioContext.currentTime + 0.3,
+  );
+
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.3);
 }
 
 function completeWorkout() {
@@ -825,17 +924,27 @@ function startTimer() {
   if (appState.timerRunning) return;
 
   appState.timerRunning = true;
-  document.getElementById("startPauseBtn").textContent = "Pause";
 
   appState.timerInterval = setInterval(() => {
-    appState.timerSeconds++;
+    appState.timerSeconds--;
     updateTimerDisplay();
+
+    // When timer hits 0 during rest
+    if (appState.timerSeconds <= 0 && appState.isResting) {
+      stopTimer();
+      playBeep();
+      speak("Time's up. Start next set.");
+
+      // Auto-advance after 2 seconds
+      setTimeout(() => {
+        handleRestComplete();
+      }, 2000);
+    }
   }, 1000);
 }
 
 function stopTimer() {
   appState.timerRunning = false;
-  document.getElementById("startPauseBtn").textContent = "Start";
 
   if (appState.timerInterval) {
     clearInterval(appState.timerInterval);
@@ -844,10 +953,11 @@ function stopTimer() {
 }
 
 function updateTimerDisplay() {
-  const minutes = Math.floor(appState.timerSeconds / 60);
-  const seconds = appState.timerSeconds % 60;
+  const minutes = Math.floor(Math.abs(appState.timerSeconds) / 60);
+  const seconds = Math.abs(appState.timerSeconds) % 60;
+  const sign = appState.timerSeconds < 0 ? "+" : "";
   document.getElementById("timerDisplay").textContent =
-    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    `${sign}${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 // Voice Synthesis

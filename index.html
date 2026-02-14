@@ -1,111 +1,154 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>12-Week Workout Tracker</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🏋️ 12-Week Transformation</h1>
-            <p>Your Progressive Home Workout Journey</p>
-            
-            <div class="phase-info">
-                <div class="stat-box">
-                    <div class="label">Current Week</div>
-                    <div class="value" id="currentWeek">1</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">Phase</div>
-                    <div class="value" id="currentPhase">1</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">Completed</div>
-                    <div class="value" id="completedWorkouts">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">Streak</div>
-                    <div class="value" id="streak">0🔥</div>
-                </div>
-            </div>
+      <!-- Header -->
+      <div class="header">
+        <h1>🏋️ 12-Week Transformation</h1>
+        <p>Your Progressive Home Workout Journey</p>
+
+        <div class="phase-info">
+          <div class="stat-box">
+            <div class="label">Current Week</div>
+            <div class="value" id="currentWeek">1</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">Phase</div>
+            <div class="value" id="currentPhase">1</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">Completed</div>
+            <div class="value" id="completedWorkouts">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">Streak</div>
+            <div class="value" id="streak">0🔥</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main View (Today's Workout) -->
+      <div id="mainView">
+        <div class="card">
+          <h2>📅 Today's Training</h2>
+          <div id="todayWorkout">
+            <p>Loading your workout...</p>
+          </div>
+          <button class="btn" onclick="startWorkout()">Start Workout</button>
+          <button class="btn btn-secondary" onclick="showView('schedule')">
+            View Full Schedule
+          </button>
         </div>
 
-        <!-- Main View (Today's Workout) -->
-        <div id="mainView">
-            <div class="card">
-                <h2>📅 Today's Training</h2>
-                <div id="todayWorkout">
-                    <p>Loading your workout...</p>
-                </div>
-                <button class="btn" onclick="startWorkout()">Start Workout</button>
-                <button class="btn btn-secondary" onclick="showView('schedule')">View Full Schedule</button>
+        <div class="card">
+          <h2>⚙️ Quick Settings</h2>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <span>Voice Guidance</span>
+              <div
+                class="toggle active"
+                id="voiceToggle"
+                onclick="toggleVoice()"
+              ></div>
             </div>
+            <div class="setting-item">
+              <span>Morning Alarm</span>
+              <div
+                class="toggle active"
+                id="notifToggle"
+                onclick="toggleNotifications()"
+              ></div>
+            </div>
+            <div class="setting-item">
+              <span>Alarm Time</span>
+              <input
+                type="time"
+                id="alarmTime"
+                value="05:30"
+                onchange="updateAlarmTime()"
+                style="
+                  background: rgba(79, 70, 229, 0.2);
+                  border: 1px solid rgba(79, 70, 229, 0.4);
+                  color: #e0e7ff;
+                  padding: 8px 12px;
+                  border-radius: 8px;
+                  font-size: 1rem;
+                "
+              />
+            </div>
+          </div>
+          <button
+            class="btn btn-secondary"
+            onclick="testAlarm()"
+            style="margin-top: 15px"
+          >
+            🔔 Test Alarm Now
+          </button>
+          <button
+            class="btn btn-danger"
+            onclick="resetProgress()"
+            style="margin-top: 10px"
+          >
+            🔄 Reset Progress (Start Over)
+          </button>
+        </div>
+      </div>
 
-            <div class="card">
-                <h2>⚙️ Quick Settings</h2>
-                <div class="settings-grid">
-                    <div class="setting-item">
-                        <span>Voice Guidance</span>
-                        <div class="toggle active" id="voiceToggle" onclick="toggleVoice()"></div>
-                    </div>
-                    <div class="setting-item">
-                        <span>Morning Alarm</span>
-                        <div class="toggle active" id="notifToggle" onclick="toggleNotifications()"></div>
-                    </div>
-                    <div class="setting-item">
-                        <span>Alarm Time</span>
-                        <input type="time" id="alarmTime" value="05:30" onchange="updateAlarmTime()" style="background: rgba(79, 70, 229, 0.2); border: 1px solid rgba(79, 70, 229, 0.4); color: #e0e7ff; padding: 8px 12px; border-radius: 8px; font-size: 1rem;">
-                    </div>
-                </div>
-                <button class="btn btn-secondary" onclick="testAlarm()" style="margin-top: 15px;">🔔 Test Alarm Now</button>
-                <button class="btn btn-danger" onclick="resetProgress()" style="margin-top: 10px;">🔄 Reset Progress (Start Over)</button>
-            </div>
+      <!-- Workout View -->
+      <div id="workoutView" class="hidden">
+        <div class="card">
+          <h2>🏋️ Workout in Progress</h2>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+          </div>
+
+          <div class="current-exercise" id="currentExerciseDisplay">
+            <h3>Warm-up</h3>
+            <p>Preparing to start...</p>
+          </div>
+
+          <div class="timer-display" id="timerDisplay">00:00</div>
+
+          <div class="controls">
+            <button
+              class="btn btn-success"
+              id="startPauseBtn"
+              onclick="toggleTimer()"
+            >
+              Start
+            </button>
+            <button class="btn" onclick="nextExercise()">Next Exercise</button>
+            <button class="btn btn-danger" onclick="endWorkout()">
+              End Workout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule View -->
+      <div id="scheduleView" class="hidden">
+        <div class="card">
+          <h2>📋 Weekly Schedule</h2>
+          <div class="day-selector" id="weekSchedule"></div>
+          <button class="btn btn-secondary" onclick="showView('main')">
+            Back to Today
+          </button>
         </div>
 
-        <!-- Workout View -->
-        <div id="workoutView" class="hidden">
-            <div class="card">
-                <h2>🏋️ Workout in Progress</h2>
-                
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
-                </div>
-
-                <div class="current-exercise" id="currentExerciseDisplay">
-                    <h3>Warm-up</h3>
-                    <p>Preparing to start...</p>
-                </div>
-
-                <div class="timer-display" id="timerDisplay">00:00</div>
-
-                <div class="controls">
-                    <button class="btn btn-success" id="startPauseBtn" onclick="toggleTimer()">Start</button>
-                    <button class="btn" onclick="nextExercise()">Next Exercise</button>
-                    <button class="btn btn-danger" onclick="endWorkout()">End Workout</button>
-                </div>
-
-                <div style="margin-top: 20px;" id="exerciseQueue"></div>
-            </div>
+        <div class="card" id="selectedDayWorkout">
+          <h2>Workout Details</h2>
+          <p>Select a day to view workout details</p>
         </div>
-
-        <!-- Schedule View -->
-        <div id="scheduleView" class="hidden">
-            <div class="card">
-                <h2>📋 Weekly Schedule</h2>
-                <div class="day-selector" id="weekSchedule"></div>
-                <button class="btn btn-secondary" onclick="showView('main')">Back to Today</button>
-            </div>
-
-            <div class="card" id="selectedDayWorkout">
-                <h2>Workout Details</h2>
-                <p>Select a day to view workout details</p>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
