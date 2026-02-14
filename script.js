@@ -360,6 +360,7 @@ let appState = {
   streak: 0,
   voiceEnabled: true,
   notificationsEnabled: true,
+  alarmTime: "05:30", // Default 5:30 AM
   lastWorkoutDate: null,
   weeklyCompletion: {},
   workoutInProgress: false,
@@ -368,11 +369,24 @@ let appState = {
   timerSeconds: 0,
   timerInterval: null,
   currentWorkoutData: null,
+  programStartDate: null, // When user started the 12-week program
+  weekStartDate: null, // When current week started
 };
 
 // Initialize
 function init() {
   loadState();
+
+  // Set program start date if this is first time
+  if (!appState.programStartDate) {
+    appState.programStartDate = new Date().toISOString();
+    appState.weekStartDate = new Date().toISOString();
+    saveState();
+  }
+
+  // Check if we need to advance to next week based on calendar
+  checkWeekProgression();
+
   updateDisplay();
   renderTodayWorkout();
   checkMorningNotification();
@@ -387,6 +401,11 @@ function loadState() {
   if (saved) {
     appState = { ...appState, ...JSON.parse(saved) };
   }
+  // Update alarm time input if it exists
+  const alarmInput = document.getElementById("alarmTime");
+  if (alarmInput) {
+    alarmInput.value = appState.alarmTime;
+  }
 }
 
 function saveState() {
@@ -400,6 +419,38 @@ function updateDisplay() {
   document.getElementById("completedWorkouts").textContent =
     appState.completedWorkouts;
   document.getElementById("streak").textContent = appState.streak + "🔥";
+
+  // Update week info if element exists
+  updateWeekInfo();
+}
+
+function updateWeekInfo() {
+  const daysInWeek = getDaysInCurrentWeek();
+  const daysInProgram = getDaysInProgram();
+
+  // Add info below stats if not already there
+  let infoDiv = document.getElementById("weekInfo");
+  if (!infoDiv) {
+    const header = document.querySelector(".header");
+    infoDiv = document.createElement("div");
+    infoDiv.id = "weekInfo";
+    infoDiv.style.cssText =
+      "margin-top: 15px; padding: 15px; background: rgba(79, 70, 229, 0.1); border-radius: 10px; font-size: 0.9rem; color: #c7d2fe;";
+    header.appendChild(infoDiv);
+  }
+
+  const weekKey = `week${appState.currentWeek}`;
+  const workoutsThisWeek = Object.keys(
+    appState.weeklyCompletion[weekKey] || {},
+  ).length;
+
+  infoDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div>📅 Day ${daysInWeek + 1} of Week ${appState.currentWeek}</div>
+            <div>💪 ${workoutsThisWeek}/4 workouts this week</div>
+            <div>🗓️ Total: ${daysInProgram} days in program</div>
+        </div>
+    `;
 }
 
 function getCurrentPhase() {
@@ -415,31 +466,82 @@ function getCurrentPhaseData() {
   return workoutProgram.phase3;
 }
 
+// Check if we should advance to next week based on calendar days
+function checkWeekProgression() {
+  if (!appState.weekStartDate) return;
+
+  const now = new Date();
+  const weekStart = new Date(appState.weekStartDate);
+  const daysSinceWeekStart = Math.floor(
+    (now - weekStart) / (1000 * 60 * 60 * 24),
+  );
+
+  // If 7 or more days have passed, advance to next week
+  if (daysSinceWeekStart >= 7 && appState.currentWeek < 12) {
+    appState.currentWeek++;
+    appState.weekStartDate = new Date().toISOString();
+    appState.weeklyCompletion[`week${appState.currentWeek}`] = {};
+    saveState();
+
+    // Show notification
+    showNotification(
+      "📅 New Week!",
+      `Welcome to Week ${appState.currentWeek}!`,
+    );
+  }
+}
+
+// Get days remaining in current week
+function getDaysInCurrentWeek() {
+  if (!appState.weekStartDate) return 0;
+
+  const now = new Date();
+  const weekStart = new Date(appState.weekStartDate);
+  const daysPassed = Math.floor((now - weekStart) / (1000 * 60 * 60 * 24));
+
+  return daysPassed;
+}
+
+// Get total days in program
+function getDaysInProgram() {
+  if (!appState.programStartDate) return 0;
+
+  const now = new Date();
+  const programStart = new Date(appState.programStartDate);
+  const daysPassed = Math.floor((now - programStart) / (1000 * 60 * 60 * 24));
+
+  return daysPassed;
+}
+
 // Date Management
 function getDayOfWeek() {
-  const days = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-  ];
-  return days[new Date().getDay()];
+  // Returns 0-6 (Sunday = 0, Monday = 1, etc.)
+  return new Date().getDay();
 }
 
 function getWorkoutDay() {
+  const today = getDayOfWeek();
+
+  // Map calendar days to workout days
+  // Sunday (0) = Rest
+  // Monday (1) = Day 1 (Heavy Push)
+  // Tuesday (2) = Day 2 (Legs)
+  // Wednesday (3) = Day 3 (Rest/Mobility)
+  // Thursday (4) = Day 4 (Back + Core)
+  // Friday (5) = Day 5 (Full Body)
+  // Saturday (6) = Rest
+
   const dayMap = {
-    monday: 1,
-    tuesday: 2,
-    wednesday: 3,
-    thursday: 4,
-    friday: 5,
-    saturday: 0,
-    sunday: 0,
+    0: 0, // Sunday - Rest
+    1: 1, // Monday - Heavy Push
+    2: 2, // Tuesday - Legs
+    3: 3, // Wednesday - Rest/Mobility
+    4: 4, // Thursday - Back + Core
+    5: 5, // Friday - Full Body
+    6: 0, // Saturday - Rest
   };
-  return dayMap[getDayOfWeek()];
+
+  return dayMap[today];
 }
 
 // Render Today's Workout
@@ -448,10 +550,23 @@ function renderTodayWorkout() {
   const phaseData = getCurrentPhaseData();
   const container = document.getElementById("todayWorkout");
 
+  // Get day name for display
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const todayName = dayNames[getDayOfWeek()];
+
   if (workoutDay === 0) {
     container.innerHTML = `
             <div class="warmup-section">
                 <h3>🌟 Rest Day / Active Recovery</h3>
+                <p style="margin-bottom: 10px;"><strong>Today is ${todayName}</strong></p>
                 <p>Light stretching, walking, or mobility work. Your muscles need recovery to grow!</p>
             </div>
         `;
@@ -462,6 +577,7 @@ function renderTodayWorkout() {
 
   let html = `
         <div style="margin-bottom: 20px;">
+            <p style="color: #a5b4fc; font-size: 0.9rem; margin-bottom: 10px;">📅 <strong>${todayName}</strong> - Workout Day ${workoutDay}</p>
             <span class="phase-badge">${phaseData.name}</span>
             <h3 style="margin: 15px 0 5px 0;">Day ${workoutDay}: ${dayWorkout.name}</h3>
             <p style="color: #c7d2fe; font-size: 0.9rem;">${phaseData.description}</p>
@@ -584,11 +700,7 @@ function nextExercise() {
         <h3>${isWarmup ? "🔥 Warm-up" : "💪 Main Set"}</h3>
         <h2 style="font-size: 1.8rem; margin: 15px 0;">${exercise.name}</h2>
         <p style="font-size: 1.3rem;">${exerciseText}</p>
-        ${
-          exercise.sets
-            ? `<p style="opacity: 0.8;">Sets: ${exercise.sets}</p>`
-            : ""
-        }
+        ${exercise.sets ? `<p style="opacity: 0.8;">Sets: ${exercise.sets}</p>` : ""}
         ${noteHTML}
     `;
 
@@ -611,9 +723,7 @@ function nextExercise() {
 
   // Voice announcement
   if (appState.voiceEnabled) {
-    let voiceText = `${isWarmup ? "Warm up. " : ""}${
-      exercise.name
-    }. ${exerciseText}`;
+    let voiceText = `${isWarmup ? "Warm up. " : ""}${exercise.name}. ${exerciseText}`;
     if (exercise.note) {
       voiceText += `. ${exercise.note}`;
     }
@@ -651,7 +761,7 @@ function completeWorkout() {
   if (appState.lastWorkoutDate) {
     const lastDate = new Date(appState.lastWorkoutDate);
     const daysDiff = Math.floor(
-      (new Date() - lastDate) / (1000 * 60 * 60 * 24)
+      (new Date() - lastDate) / (1000 * 60 * 60 * 24),
     );
 
     if (daysDiff === 1) {
@@ -673,13 +783,8 @@ function completeWorkout() {
   }
   appState.weeklyCompletion[weekKey][workoutDay] = true;
 
-  // Check if week is complete (4 workouts)
-  const completedThisWeek = Object.keys(
-    appState.weeklyCompletion[weekKey] || {}
-  ).length;
-  if (completedThisWeek >= 4 && appState.currentWeek < 12) {
-    appState.currentWeek++;
-  }
+  // Check if week progression is needed (based on calendar, not workout count)
+  checkWeekProgression();
 
   saveState();
   updateDisplay();
@@ -688,9 +793,12 @@ function completeWorkout() {
     speak("Workout complete! Great job!");
   }
 
+  const weeklyCount = Object.keys(
+    appState.weeklyCompletion[weekKey] || {},
+  ).length;
   showNotification(
     "🎉 Workout Complete!",
-    "Excellent work! Your muscles are growing."
+    `Excellent work! ${weeklyCount}/4 workouts this week.`,
   );
   showView("main");
   renderTodayWorkout();
@@ -738,9 +846,8 @@ function stopTimer() {
 function updateTimerDisplay() {
   const minutes = Math.floor(appState.timerSeconds / 60);
   const seconds = appState.timerSeconds % 60;
-  document.getElementById("timerDisplay").textContent = `${String(
-    minutes
-  ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  document.getElementById("timerDisplay").textContent =
+    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
 // Voice Synthesis
@@ -778,26 +885,79 @@ function checkMorningNotification() {
   const hours = now.getHours();
   const minutes = now.getMinutes();
 
-  // 5:30 AM prep notification
-  if (hours === 5 && minutes === 30) {
+  // Parse alarm time (format: "HH:MM")
+  const [alarmHour, alarmMinute] = appState.alarmTime.split(":").map(Number);
+
+  // Check if current time matches alarm time
+  if (hours === alarmHour && minutes === alarmMinute) {
     showNotification(
       "⏰ Wake Up!",
-      "It's 5:30 AM. Time to prepare for your workout!"
+      `It's ${appState.alarmTime}. Time to prepare for your workout!`,
     );
     if (appState.voiceEnabled) {
-      speak("Good morning! It's 5:30 AM. Time to prepare for your workout.");
+      speak(
+        `Good morning! It's ${appState.alarmTime}. Time to prepare for your workout.`,
+      );
     }
   }
 
-  // 6:00 AM start notification
-  if (hours === 6 && minutes === 0) {
-    showNotification(
-      "💪 Workout Time!",
-      "It's 6:00 AM. Let's start your workout!"
-    );
+  // 30 minutes after alarm - workout start reminder
+  const workoutHour = alarmHour + (alarmMinute + 30 >= 60 ? 1 : 0);
+  const workoutMinute = (alarmMinute + 30) % 60;
+
+  if (hours === workoutHour && minutes === workoutMinute) {
+    showNotification("💪 Workout Time!", "Time to start your workout!");
     if (appState.voiceEnabled) {
-      speak("It's 6 AM. Time to start your workout. Let's go!");
+      speak("Time to start your workout. Let's go!");
     }
+  }
+}
+
+function updateAlarmTime() {
+  const alarmInput = document.getElementById("alarmTime");
+  appState.alarmTime = alarmInput.value;
+  saveState();
+  showNotification(
+    "✅ Alarm Updated",
+    `Your alarm is now set for ${appState.alarmTime}`,
+  );
+}
+
+function testAlarm() {
+  showNotification(
+    "🔔 Test Alarm",
+    "If you can see this notification and hear the voice, your alarm is working!",
+  );
+  if (appState.voiceEnabled) {
+    speak(
+      "This is a test alarm. If you can hear this, your alarm notifications are working correctly!",
+    );
+  }
+}
+
+function resetProgress() {
+  if (
+    confirm(
+      "⚠️ Are you sure you want to reset ALL progress? This will:\n\n• Reset to Week 1\n• Clear all workout history\n• Reset your streak\n• Keep your settings (alarm time, voice, etc.)\n\nThis cannot be undone!",
+    )
+  ) {
+    // Reset progress but keep settings
+    appState.currentWeek = 1;
+    appState.completedWorkouts = 0;
+    appState.streak = 0;
+    appState.lastWorkoutDate = null;
+    appState.weeklyCompletion = {};
+    appState.programStartDate = new Date().toISOString();
+    appState.weekStartDate = new Date().toISOString();
+
+    saveState();
+    updateDisplay();
+    renderTodayWorkout();
+
+    showNotification(
+      "🔄 Progress Reset",
+      "Starting fresh from Week 1. Good luck! 💪",
+    );
   }
 }
 
@@ -856,14 +1016,12 @@ function renderSchedule() {
       i === 0 || i === 3 || i === 6
         ? "day-btn"
         : isCompleted
-        ? "day-btn completed"
-        : "day-btn";
+          ? "day-btn completed"
+          : "day-btn";
 
     html += `
             <button class="${className}" onclick="showDayDetails(${i})">
-                <div style="font-size: 0.8rem; opacity: 0.8;">${
-                  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][i]
-                }</div>
+                <div style="font-size: 0.8rem; opacity: 0.8;">${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][i]}</div>
                 <div style="margin-top: 5px;">${dayNames[i]}</div>
                 ${isCompleted ? '<div style="margin-top: 5px;">✓</div>' : ""}
             </button>
