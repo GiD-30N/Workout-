@@ -422,40 +422,58 @@ return dayMap[today];
 
 // Render Today’s Workout
 function renderTodayWorkout() {
+try {
 const workoutDay = getWorkoutDay();
 const phaseData = getCurrentPhaseData();
 const container = document.getElementById(‘todayWorkout’);
 
 ```
-// Get day name for display
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const todayName = dayNames[getDayOfWeek()];
+    if (!container) {
+        console.error('todayWorkout container not found');
+        return;
+    }
+    
+    // Get day name for display
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const todayName = dayNames[getDayOfWeek()];
 
-if (workoutDay === 0) {
-    container.innerHTML = `
-        <div class="warmup-section">
-            <h3>🌟 Rest Day / Active Recovery</h3>
-            <p style="margin-bottom: 10px;"><strong>Today is ${todayName}</strong></p>
-            <p>Light stretching, walking, or mobility work. Your muscles need recovery to grow!</p>
+    if (workoutDay === 0) {
+        container.innerHTML = `
+            <div class="warmup-section">
+                <h3>🌟 Rest Day / Active Recovery</h3>
+                <p style="margin-bottom: 10px;"><strong>Today is ${todayName}</strong></p>
+                <p>Light stretching, walking, or mobility work. Your muscles need recovery to grow!</p>
+            </div>
+        `;
+        return;
+    }
+
+    const dayWorkout = phaseData.days[workoutDay];
+    
+    if (!dayWorkout) {
+        container.innerHTML = `
+            <div class="warmup-section">
+                <h3>⚠️ No Workout Found</h3>
+                <p style="margin-bottom: 10px;"><strong>Today is ${todayName}</strong></p>
+                <p>Click "🔄 Refresh" to update, or check the Full Schedule.</p>
+            </div>
+        `;
+        console.error('No workout found for day:', workoutDay, 'phase:', getCurrentPhase());
+        return;
+    }
+    
+    let html = `
+        <div style="margin-bottom: 20px;">
+            <p style="color: #A0A8B8; font-size: 0.9rem; margin-bottom: 10px;">📅 <strong>${todayName}</strong> - Workout Day ${workoutDay}</p>
+            <span class="phase-badge">${phaseData.name}</span>
+            <h3 style="margin: 15px 0 5px 0;">Day ${workoutDay}: ${dayWorkout.name}</h3>
+            <p style="color: #A0A8B8; font-size: 0.9rem;">${phaseData.description}</p>
         </div>
+
+        <div class="warmup-section">
+            <h3>🔥 Warm-up (8-10 mins)</h3>
+            <ul class="exercise-list">
     `;
-    return;
-}
-
-const dayWorkout = phaseData.days[workoutDay];
-
-let html = `
-    <div style="margin-bottom: 20px;">
-        <p style="color: #a5b4fc; font-size: 0.9rem; margin-bottom: 10px;">📅 <strong>${todayName}</strong> - Workout Day ${workoutDay}</p>
-        <span class="phase-badge">${phaseData.name}</span>
-        <h3 style="margin: 15px 0 5px 0;">Day ${workoutDay}: ${dayWorkout.name}</h3>
-        <p style="color: #c7d2fe; font-size: 0.9rem;">${phaseData.description}</p>
-    </div>
-
-    <div class="warmup-section">
-        <h3>🔥 Warm-up (8-10 mins)</h3>
-        <ul class="exercise-list">
-`;
 
 workoutProgram.warmup.forEach(ex => {
     if (ex.type === 'timed') {
@@ -495,7 +513,20 @@ dayWorkout.exercises.forEach(ex => {
 });
 
 html += '</ul>';
-container.innerHTML = html;
+    container.innerHTML = html;
+} catch (error) {
+    console.error('Error rendering today workout:', error);
+    const container = document.getElementById('todayWorkout');
+    if (container) {
+        container.innerHTML = `
+            <div class="warmup-section">
+                <h3>⚠️ Error Loading Workout</h3>
+                <p>Please click "🔄 Refresh (Update Date)" to try again.</p>
+                <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.7;">Error: ${error.message}</p>
+            </div>
+        `;
+    }
+}
 ```
 
 }
@@ -1046,5 +1077,10 @@ if (‘Notification’ in window && Notification.permission === ‘default’) {
 Notification.requestPermission();
 }
 
-// Initialize app
-init();init();
+// Initialize app when DOM is ready
+if (document.readyState === ‘loading’) {
+document.addEventListener(‘DOMContentLoaded’, init);
+} else {
+// DOM is already loaded
+init();
+}
