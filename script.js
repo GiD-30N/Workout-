@@ -468,20 +468,20 @@ const today = getDayOfWeek();
 ```
 // Map calendar days to workout days
 // Sunday (0) = Rest
-// Monday (1) = Day 1 (Lower Body Strength)
-// Tuesday (2) = Day 2 (Upper Push)
-// Wednesday (3) = Day 3 (Athletic/Explosive)
-// Thursday (4) = Day 4 (Lower Body Power)
-// Friday (5) = Day 5 (Upper Mixed)
+// Monday (1) = Day 1 (Heavy Push)
+// Tuesday (2) = Day 2 (Legs)
+// Wednesday (3) = Day 3 (Rest/Mobility)
+// Thursday (4) = Day 4 (Back + Core)
+// Friday (5) = Day 5 (Full Body)
 // Saturday (6) = Rest
 
 const dayMap = {
     0: 0,  // Sunday - Rest
-    1: 1,  // Monday - Lower Strength
-    2: 2,  // Tuesday - Upper Push
-    3: 3,  // Wednesday - Athletic
-    4: 4,  // Thursday - Lower Power
-    5: 5,  // Friday - Upper Mixed
+    1: 1,  // Monday - Heavy Push
+    2: 2,  // Tuesday - Legs
+    3: 3,  // Wednesday - Rest/Mobility
+    4: 4,  // Thursday - Back + Core
+    5: 5,  // Friday - Full Body
     6: 0   // Saturday - Rest
 };
 
@@ -1156,7 +1156,7 @@ const weekKey = `week${appState.currentWeek}`;
 const completed = appState.weeklyCompletion[weekKey] || {};
 
 ```
-const dayNames = ['Rest', 'Lower Strength', 'Upper Push', 'Athletic', 'Lower Power', 'Upper Mixed', 'Rest'];
+const dayNames = ['Rest', 'Heavy Push', 'Legs', 'Rest/Mobility', 'Back+Core', 'Full Body', 'Rest'];
 
 let html = '';
 for (let i = 0; i <= 6; i++) {
@@ -1232,4 +1232,4 @@ document.addEventListener(‘DOMContentLoaded’, init);
 } else {
 // DOM is already loaded
 init();
-}}}
+}}}}
