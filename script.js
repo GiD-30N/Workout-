@@ -1,164 +1,196 @@
 // Workout Data Structure
 const workoutProgram = {
 warmup: [
-{ name: “Jumping jacks”, duration: 30, type: “timed” },
-{ name: “Arm circles (each direction)”, reps: 10, type: “reps” },
-{ name: “Hip circles”, reps: 10, type: “reps” },
-{ name: “Leg swings per leg”, reps: 10, type: “reps” },
-{ name: “Slow push-ups”, reps: 10, type: “reps” },
-{ name: “Bodyweight squats (3 sec down)”, reps: 10, type: “reps” },
-{ name: “Plank”, duration: 20, type: “timed” }
+{ name: “Jumping jacks”, duration: 60, type: “timed” },
+{ name: “Hip circles + leg swings”, reps: “10 each direction”, type: “reps” },
+{ name: “Arm circles + shoulder rolls”, duration: 30, type: “timed” },
+{ name: “Deep squat hold”, duration: 45, type: “timed” },
+{ name: “Glute bridges”, reps: 15, type: “reps” },
+{ name: “Slow push-ups (3 sec down)”, reps: 10, type: “reps” }
 ],
 
 ```
 phase1: {
-    name: "Phase 1: Base Building",
+    name: "Phase 1: Foundation",
     weeks: [1, 2, 3, 4],
-    description: "Build foundation - Focus on form and control",
+    description: "Build strength foundation and movement quality",
     days: {
         1: {
-            name: "Heavy Push (Chest, Shoulders, Triceps)",
+            name: "Lower Body Strength + Core",
             exercises: [
-                { name: "Decline Push-ups (feet on bed)", sets: 4, reps: "8-12", rest: 90, note: "3 sec down, 1 sec pause" },
-                { name: "Archer Push-ups", sets: 3, reps: "6-8 each side", rest: 90 },
-                { name: "Pseudo Planche Push-ups", sets: 3, reps: "6-8", rest: 90 },
-                { name: "Chair Dips", sets: 3, reps: "8-12", rest: 90 },
-                { name: "Pike Push-ups (hips high)", sets: 3, reps: "8-10", rest: 90, note: "Last set near failure - you should shake" }
+                { name: "Bulgarian Split Squats (rear foot elevated)", sets: 4, reps: "8-12 each leg", rest: 75, note: "3 sec down, 1 sec pause" },
+                { name: "Slow Bodyweight Squats", sets: 4, reps: "12-15", rest: 60, note: "4 sec down, explode up" },
+                { name: "Walking Lunges", sets: 3, reps: "20 steps", rest: 60, note: "Slow and controlled" },
+                { name: "Single-Leg Glute Bridges", sets: 3, reps: "12-15 each", rest: 60 },
+                { name: "Calf Raises (single-leg)", sets: 4, reps: "15-25", rest: 60, note: "Pause 2 sec at top" },
+                { name: "Core Finisher: Plank → Side plank → Reverse plank", sets: 2, duration: "45s each", rest: 60 }
             ]
         },
         2: {
-            name: "Legs (Make It Hurt)",
+            name: "Upper Push + Core",
             exercises: [
-                { name: "Bulgarian Split Squats (back foot on chair)", sets: 4, reps: "8-10 each leg", rest: 90, note: "4 sec down" },
-                { name: "Assisted Pistol Squats (hold doorway)", sets: 3, reps: "6 each leg", rest: 90 },
-                { name: "Jump Squats", sets: 3, reps: "10", rest: 90 },
-                { name: "Single-leg Glute Bridges", sets: 3, reps: "12 each", rest: 75 },
-                { name: "Single-leg Calf Raises", sets: 4, reps: "20", rest: 60, note: "You should struggle walking after this" }
+                { name: "Decline Push-ups (feet elevated)", sets: 4, reps: "10-15", rest: 90 },
+                { name: "Diamond Push-ups", sets: 3, reps: "12-15", rest: 75 },
+                { name: "Pike Push-ups (shoulder focus)", sets: 4, reps: "8-12", rest: 75, note: "Progress toward handstand" },
+                { name: "Push-up Mechanical Drop Set (Regular → Knee → Plank hold)", sets: 2, reps: "To failure", rest: 120 },
+                { name: "Lying Leg Raises", sets: 4, reps: "15", rest: 60 },
+                { name: "Hollow Body Hold", sets: 3, duration: "30-40s", rest: 60 }
             ]
         },
         3: {
-            name: "Rest / Mobility",
+            name: "Athletic / Explosive Day",
             exercises: [
-                { name: "Light stretching or yoga", duration: "20-30 min", type: "active_recovery" },
-                { name: "Walking", duration: "20-30 min", type: "active_recovery" }
+                { name: "Squat Jumps", sets: 4, reps: "8", rest: 75, note: "High speed, low volume" },
+                { name: "Alternating Jump Lunges", sets: 3, reps: "10 each leg", rest: 75 },
+                { name: "Broad Jumps", sets: 4, reps: "6", rest: 90 },
+                { name: "Explosive Push-ups (clap or fast)", sets: 4, reps: "8-10", rest: 75 },
+                { name: "Circuit (3 rounds): Mountain climbers 40s → High knees 40s → 12 Burpees", sets: "3 rounds", reps: "Complete circuit", rest: 60, type: "circuit", note: "1 min rest between rounds. Builds endurance + stamina" }
             ]
         },
         4: {
-            name: "Back + Core (No Bar Version)",
+            name: "Lower Body Power + Posterior",
             exercises: [
-                { name: "Feet-Elevated Towel Rows (under table/doorway)", sets: 4, reps: "8-12", rest: 90, note: "4 sec down, 2 sec squeeze at top" },
-                { name: "Isometric Row Hold", sets: 3, duration: "20s", rest: 90, note: "Hold at contraction" },
-                { name: "Reverse Snow Angels (slow)", sets: 3, reps: "12", rest: 75 },
-                { name: "Superman Hold", sets: 3, duration: "30s", rest: 75 },
-                { name: "Lying Leg Raises", sets: 3, reps: "12-15", rest: 75, note: "Pull elbows back. Squeeze shoulder blades." }
+                { name: "Assisted Pistol Squats", sets: 4, reps: "6-8 each leg", rest: 90, note: "Progress to full pistols" },
+                { name: "Step-ups (high surface)", sets: 4, reps: "10 each leg", rest: 75, note: "Drive knee explosively" },
+                { name: "Hip Thrusts (shoulders on bed)", sets: 4, reps: "12-15", rest: 75, note: "Pause 2 sec at top" },
+                { name: "Nordic Curl Negatives OR Hamstring Walkouts", sets: 3, reps: "6-8", rest: 90, note: "Slow negatives" },
+                { name: "Calf Raise Burnout", sets: "AMRAP", reps: "100 total", rest: 0, note: "As few sets as possible" },
+                { name: "Dead Bug", sets: 3, reps: "12", rest: 60 },
+                { name: "Side Plank with Leg Lift", sets: 3, reps: "12 each", rest: 60 }
             ]
         },
         5: {
-            name: "Full Body Tension",
+            name: "Upper Mixed + Endurance",
             exercises: [
-                { name: "Circuit (3-4 rounds): 8 Decline Pushups → 8 Bulgarian each leg → 8 Rows → 10 Pike Pushups → 12 Leg Raises", sets: "3-4 rounds", reps: "Complete circuit", rest: 0, type: "circuit", note: "Minimal rest between exercises. Drives growth + conditioning." }
+                { name: "Towel Rows Under Table OR Reverse Snow Angels", sets: 4, reps: "8-12", rest: 75, note: "Slow and controlled" },
+                { name: "Archer Push-ups", sets: 4, reps: "8-10 each side", rest: 90 },
+                { name: "Slow Push-ups", sets: 3, reps: "12", rest: 75, note: "5 sec down" },
+                { name: "Shoulder Taps (plank)", sets: 3, reps: "30 taps", rest: 60 },
+                { name: "Finisher Circuit (2-3 rounds): 20 Push-ups → 25 Squats → 40s Mountain climbers", sets: "2-3 rounds", reps: "Complete circuit", rest: 0, type: "circuit", note: "Minimal rest between exercises" }
             ]
         }
     }
 },
 
 phase2: {
-    name: "Phase 2: Strength Building",
+    name: "Phase 2: Power Development",
     weeks: [5, 6, 7, 8],
-    description: "Increase intensity - Progressive overload",
+    description: "Increase power output and explosive strength",
     days: {
         1: {
-            name: "Heavy Push (Chest, Shoulders, Triceps)",
+            name: "Lower Body Strength + Core",
             exercises: [
-                { name: "Decline Push-ups (feet on bed)", sets: 4, reps: "8-12", rest: 90, note: "3 sec down, 1 sec pause" },
-                { name: "Archer Push-ups", sets: 3, reps: "6-8 each side", rest: 90 },
-                { name: "Pseudo Planche Push-ups", sets: 3, reps: "6-8", rest: 90 },
-                { name: "Chair Dips", sets: 3, reps: "8-12", rest: 90 },
-                { name: "Pike Push-ups (hips high)", sets: 3, reps: "8-10", rest: 90, note: "Last set near failure - you should shake" }
+                { name: "Bulgarian Split Squats (add 2-sec pause)", sets: 4, reps: "8-12 each leg", rest: 75, note: "Elevate front foot for stretch" },
+                { name: "Narrow Stance Squats", sets: 4, reps: "12-15", rest: 60, note: "4 sec down, explode up" },
+                { name: "Walking Lunges", sets: 3, reps: "20 steps", rest: 60 },
+                { name: "Single-Leg Glute Bridges (foot elevated)", sets: 3, reps: "12-15 each", rest: 60 },
+                { name: "Calf Raises (single-leg)", sets: 4, reps: "15-25", rest: 60, note: "Pause 2 sec at top" },
+                { name: "Core Finisher: Plank → Side plank → Reverse plank", sets: 2, duration: "45s each", rest: 60 }
             ]
         },
         2: {
-            name: "Legs (Make It Hurt)",
+            name: "Upper Push + Core",
             exercises: [
-                { name: "Bulgarian Split Squats (back foot on chair)", sets: 4, reps: "8-10 each leg", rest: 90, note: "4 sec down" },
-                { name: "Assisted Pistol Squats (hold doorway)", sets: 3, reps: "6 each leg", rest: 90 },
-                { name: "Jump Squats", sets: 3, reps: "10", rest: 90 },
-                { name: "Single-leg Glute Bridges", sets: 3, reps: "12 each", rest: 75 },
-                { name: "Single-leg Calf Raises", sets: 4, reps: "20", rest: 60, note: "You should struggle walking after this" }
+                { name: "Pseudo-Planche Push-ups", sets: 4, reps: "10-15", rest: 90, note: "Lean forward" },
+                { name: "Diamond Push-ups", sets: 3, reps: "12-15", rest: 75 },
+                { name: "Pike Push-ups (progress to wall HS)", sets: 4, reps: "8-12", rest: 75 },
+                { name: "Push-up Mechanical Drop Set", sets: 2, reps: "To failure", rest: 120 },
+                { name: "Lying Leg Raises", sets: 4, reps: "15", rest: 60 },
+                { name: "Hollow Body Hold", sets: 3, duration: "30-40s", rest: 60 }
             ]
         },
         3: {
-            name: "Rest / Mobility",
+            name: "Athletic / Explosive Day",
             exercises: [
-                { name: "Light stretching or yoga", duration: "20-30 min", type: "active_recovery" },
-                { name: "Walking", duration: "20-30 min", type: "active_recovery" }
+                { name: "Squat Jumps", sets: 4, reps: "8", rest: 75 },
+                { name: "Alternating Jump Lunges", sets: 3, reps: "10 each leg", rest: 75 },
+                { name: "Broad Jumps", sets: 4, reps: "6", rest: 90 },
+                { name: "Explosive Push-ups (clap)", sets: 4, reps: "8-10", rest: 75 },
+                { name: "Circuit (3 rounds): Mountain climbers 40s → High knees 40s → 12 Burpees", sets: "3 rounds", reps: "Complete circuit", rest: 60, type: "circuit", note: "1 min rest between rounds" }
             ]
         },
         4: {
-            name: "Back + Core (No Bar Version)",
+            name: "Lower Body Power + Posterior",
             exercises: [
-                { name: "Feet-Elevated Towel Rows (under table/doorway)", sets: 4, reps: "8-12", rest: 90, note: "4 sec down, 2 sec squeeze at top" },
-                { name: "Isometric Row Hold", sets: 3, duration: "20s", rest: 90, note: "Hold at contraction" },
-                { name: "Reverse Snow Angels (slow)", sets: 3, reps: "12", rest: 75 },
-                { name: "Superman Hold", sets: 3, duration: "30s", rest: 75 },
-                { name: "Lying Leg Raises", sets: 3, reps: "12-15", rest: 75, note: "Pull elbows back. Squeeze shoulder blades." }
+                { name: "Assisted Pistol Squats", sets: 4, reps: "6-8 each leg", rest: 90 },
+                { name: "Step-ups (high surface)", sets: 4, reps: "10 each leg", rest: 75, note: "Explosive knee drive" },
+                { name: "Hip Thrusts (shoulders elevated)", sets: 4, reps: "12-15", rest: 75, note: "Pause 2 sec at top" },
+                { name: "Nordic Curl Negatives", sets: 3, reps: "6-8", rest: 90, note: "4 sec down" },
+                { name: "Calf Raise Burnout", sets: "AMRAP", reps: "100 total", rest: 0 },
+                { name: "Dead Bug", sets: 3, reps: "12", rest: 60 },
+                { name: "Side Plank with Leg Lift", sets: 3, reps: "12 each", rest: 60 }
             ]
         },
         5: {
-            name: "Full Body Tension",
+            name: "Upper Mixed + Endurance",
             exercises: [
-                { name: "Circuit (3-4 rounds): 8 Decline Pushups → 8 Bulgarian each leg → 8 Rows → 10 Pike Pushups → 12 Leg Raises", sets: "3-4 rounds", reps: "Complete circuit", rest: 0, type: "circuit", note: "Minimal rest between exercises. Drives growth + conditioning." }
+                { name: "Towel Rows Under Table", sets: 4, reps: "8-12", rest: 75 },
+                { name: "Archer Push-ups", sets: 4, reps: "8-10 each side", rest: 90 },
+                { name: "Slow Push-ups", sets: 3, reps: "12", rest: 75, note: "5 sec down" },
+                { name: "Shoulder Taps (plank)", sets: 3, reps: "30 taps", rest: 60 },
+                { name: "Finisher Circuit (3 rounds): 20 Push-ups → 25 Squats → 40s Mountain climbers", sets: "3 rounds", reps: "Complete circuit", rest: 0, type: "circuit" }
             ]
         }
     }
 },
 
 phase3: {
-    name: "Phase 3: Hypertrophy & Peak",
+    name: "Phase 3: Peak Performance",
     weeks: [9, 10, 11, 12],
-    description: "Maximum muscle tension - Final push",
+    description: "Maximum strength and athletic performance",
     days: {
         1: {
-            name: "Heavy Push (Chest, Shoulders, Triceps)",
+            name: "Lower Body Strength + Core",
             exercises: [
-                { name: "Decline Push-ups (feet on bed)", sets: 4, reps: "8-12", rest: 90, note: "3 sec down, 1 sec pause" },
-                { name: "Archer Push-ups", sets: 3, reps: "6-8 each side", rest: 90 },
-                { name: "Pseudo Planche Push-ups", sets: 3, reps: "6-8", rest: 90 },
-                { name: "Chair Dips", sets: 3, reps: "8-12", rest: 90 },
-                { name: "Pike Push-ups (hips high)", sets: 3, reps: "8-10", rest: 90, note: "Last set near failure - you should shake" }
+                { name: "Bulgarian Split Squats (front foot elevated)", sets: 4, reps: "8-12 each leg", rest: 75, note: "Deepest stretch possible" },
+                { name: "Sissy Squats OR Assisted Pistols", sets: 4, reps: "12-15", rest: 60 },
+                { name: "Walking Lunges", sets: 3, reps: "20 steps", rest: 60 },
+                { name: "Single-Leg Glute Bridges (elevated)", sets: 3, reps: "12-15 each", rest: 60 },
+                { name: "Calf Raises (single-leg)", sets: 4, reps: "15-25", rest: 60, note: "Pause 2 sec at top" },
+                { name: "Core Finisher: Plank → Side plank → Reverse plank", sets: 2, duration: "45s each", rest: 60 }
             ]
         },
         2: {
-            name: "Legs (Make It Hurt)",
+            name: "Upper Push + Core",
             exercises: [
-                { name: "Bulgarian Split Squats (back foot on chair)", sets: 4, reps: "8-10 each leg", rest: 90, note: "4 sec down" },
-                { name: "Assisted Pistol Squats (hold doorway)", sets: 3, reps: "6 each leg", rest: 90 },
-                { name: "Jump Squats", sets: 3, reps: "10", rest: 90 },
-                { name: "Single-leg Glute Bridges", sets: 3, reps: "12 each", rest: 75 },
-                { name: "Single-leg Calf Raises", sets: 4, reps: "20", rest: 60, note: "You should struggle walking after this" }
+                { name: "Archer Push-ups (full range)", sets: 4, reps: "10-15", rest: 90 },
+                { name: "Diamond Push-ups", sets: 3, reps: "12-15", rest: 75 },
+                { name: "Wall Handstand Push-up Attempts", sets: 4, reps: "8-12", rest: 75, note: "Or pike progressions" },
+                { name: "Push-up Mechanical Drop Set", sets: 2, reps: "To failure", rest: 120 },
+                { name: "Lying Leg Raises", sets: 4, reps: "15", rest: 60 },
+                { name: "Hollow Body Hold", sets: 3, duration: "30-40s", rest: 60 }
             ]
         },
         3: {
-            name: "Rest / Mobility",
+            name: "Athletic / Explosive Day",
             exercises: [
-                { name: "Light stretching or yoga", duration: "20-30 min", type: "active_recovery" },
-                { name: "Walking", duration: "20-30 min", type: "active_recovery" }
+                { name: "Squat Jumps", sets: 4, reps: "8", rest: 75 },
+                { name: "Alternating Jump Lunges", sets: 3, reps: "10 each leg", rest: 75 },
+                { name: "Broad Jumps", sets: 4, reps: "6", rest: 90 },
+                { name: "Explosive Push-ups (clap)", sets: 4, reps: "8-10", rest: 75 },
+                { name: "Circuit (3 rounds): Mountain climbers 40s → High knees 40s → 12 Burpees", sets: "3 rounds", reps: "Complete circuit", rest: 60, type: "circuit" }
             ]
         },
         4: {
-            name: "Back + Core (No Bar Version)",
+            name: "Lower Body Power + Posterior",
             exercises: [
-                { name: "Feet-Elevated Towel Rows (under table/doorway)", sets: 4, reps: "8-12", rest: 90, note: "4 sec down, 2 sec squeeze at top" },
-                { name: "Isometric Row Hold", sets: 3, duration: "20s", rest: 90, note: "Hold at contraction" },
-                { name: "Reverse Snow Angels (slow)", sets: 3, reps: "12", rest: 75 },
-                { name: "Superman Hold", sets: 3, duration: "30s", rest: 75 },
-                { name: "Lying Leg Raises", sets: 3, reps: "12-15", rest: 75, note: "Pull elbows back. Squeeze shoulder blades." }
+                { name: "Full Pistol Squats", sets: 4, reps: "6-8 each leg", rest: 90, note: "Or assisted with less support" },
+                { name: "Step-ups (explosive)", sets: 4, reps: "10 each leg", rest: 75 },
+                { name: "Hip Thrusts (single-leg)", sets: 4, reps: "12-15", rest: 75, note: "Pause 2 sec at top" },
+                { name: "Nordic Curl Negatives", sets: 3, reps: "6-8", rest: 90 },
+                { name: "Calf Raise Burnout", sets: "AMRAP", reps: "100 total", rest: 0 },
+                { name: "Dead Bug", sets: 3, reps: "12", rest: 60 },
+                { name: "Side Plank with Leg Lift", sets: 3, reps: "12 each", rest: 60 }
             ]
         },
         5: {
-            name: "Full Body Tension",
+            name: "Upper Mixed + Endurance",
             exercises: [
-                { name: "Circuit (3-4 rounds): 8 Decline Pushups → 8 Bulgarian each leg → 8 Rows → 10 Pike Pushups → 12 Leg Raises", sets: "3-4 rounds", reps: "Complete circuit", rest: 0, type: "circuit", note: "Minimal rest between exercises. Drives growth + conditioning." }
+                { name: "Towel Rows (feet elevated)", sets: 4, reps: "8-12", rest: 75, note: "4 sec down" },
+                { name: "Archer Push-ups (deep)", sets: 4, reps: "8-10 each side", rest: 90 },
+                { name: "Slow Push-ups", sets: 3, reps: "12", rest: 75, note: "5 sec down" },
+                { name: "Shoulder Taps (plank)", sets: 3, reps: "30 taps", rest: 60 },
+                { name: "Finisher Circuit (3 rounds): 20 Push-ups → 25 Squats → 40s Mountain climbers", sets: "3 rounds", reps: "Complete circuit", rest: 0, type: "circuit" }
             ]
         }
     }
@@ -179,11 +211,13 @@ lastWorkoutDate: null,
 lastCheckedDate: null,
 weeklyCompletion: {},
 workoutInProgress: false,
+pausedWorkout: null, // Stores paused workout state for recovery
 currentExerciseIndex: 0,
 currentSetIndex: 0,
 isResting: false,
 timerRunning: false,
 timerSeconds: 0,
+timerEndTime: null, // Timestamp when timer should end
 timerInterval: null,
 currentWorkoutData: null,
 programStartDate: null, // When user started the 12-week program
@@ -222,6 +256,39 @@ appState.lastCheckedDate = new Date().toDateString();
 document.addEventListener('visibilitychange', handleVisibilityChange);
 window.addEventListener('focus', handleVisibilityChange);
 window.addEventListener('pageshow', handleVisibilityChange);
+
+// AUTO-SAVE RECOVERY: Check for unfinished workout
+checkForUnfinishedWorkout();
+```
+
+}
+
+// Check for paused/unfinished workout and offer to resume
+function checkForUnfinishedWorkout() {
+if (appState.pausedWorkout && appState.pausedWorkout.workoutData) {
+const exercise = appState.pausedWorkout.workoutData.exercises[appState.pausedWorkout.exerciseIndex];
+const totalExercises = appState.pausedWorkout.workoutData.totalExercises;
+
+```
+    // Show recovery notification
+    setTimeout(() => {
+        if (confirm(`⚠️ You have an unfinished workout!\n\nExercise ${appState.pausedWorkout.exerciseIndex + 1}/${totalExercises}\n${exercise.name}\n\nWould you like to resume?`)) {
+            // Restore workout state and show workout view
+            appState.workoutInProgress = true;
+            appState.currentWorkoutData = appState.pausedWorkout.workoutData;
+            appState.currentExerciseIndex = appState.pausedWorkout.exerciseIndex;
+            appState.currentSetIndex = appState.pausedWorkout.setIndex;
+            appState.isResting = appState.pausedWorkout.isResting;
+            
+            showView('workout');
+            resumeWorkout();
+        } else {
+            // Clear paused workout
+            appState.pausedWorkout = null;
+            saveState();
+        }
+    }, 1000); // Delay so UI is ready
+}
 ```
 
 }
@@ -232,7 +299,42 @@ if (!document.hidden) {
 // App just became visible
 console.log(‘App became visible - checking date’);
 checkDateChange();
+
+```
+    // CRITICAL: Resume timer if it was running
+    resumeTimerIfNeeded();
 }
+```
+
+}
+
+// Resume timer based on stored end time
+function resumeTimerIfNeeded() {
+if (appState.timerEndTime && appState.isResting) {
+const now = Date.now();
+const remaining = Math.floor((appState.timerEndTime - now) / 1000);
+
+```
+    if (remaining > 0) {
+        // Timer still has time left
+        appState.timerSeconds = remaining;
+        appState.timerRunning = false; // Reset flag
+        updateTimerDisplay();
+        startTimer(); // Restart the interval
+        console.log(`Timer resumed: ${remaining}s remaining`);
+    } else {
+        // Timer already finished while app was in background
+        appState.timerSeconds = 0;
+        updateTimerDisplay();
+        playBeep();
+        speak("Time's up. Start next set.");
+        setTimeout(() => {
+            handleRestComplete();
+        }, 2000);
+    }
+}
+```
+
 }
 
 // Check if the date has changed since last check
@@ -398,20 +500,20 @@ const today = getDayOfWeek();
 ```
 // Map calendar days to workout days
 // Sunday (0) = Rest
-// Monday (1) = Day 1 (Heavy Push)
-// Tuesday (2) = Day 2 (Legs)
-// Wednesday (3) = Day 3 (Rest/Mobility)
-// Thursday (4) = Day 4 (Back + Core)
-// Friday (5) = Day 5 (Full Body)
+// Monday (1) = Day 1 (Lower Body Strength)
+// Tuesday (2) = Day 2 (Upper Push)
+// Wednesday (3) = Day 3 (Athletic/Explosive)
+// Thursday (4) = Day 4 (Lower Body Power)
+// Friday (5) = Day 5 (Upper Mixed)
 // Saturday (6) = Rest
 
 const dayMap = {
     0: 0,  // Sunday - Rest
-    1: 1,  // Monday - Heavy Push
-    2: 2,  // Tuesday - Legs
-    3: 3,  // Wednesday - Rest/Mobility
-    4: 4,  // Thursday - Back + Core
-    5: 5,  // Friday - Full Body
+    1: 1,  // Monday - Lower Strength
+    2: 2,  // Tuesday - Upper Push
+    3: 3,  // Wednesday - Athletic
+    4: 4,  // Thursday - Lower Power
+    5: 5,  // Friday - Upper Mixed
     6: 0   // Saturday - Rest
 };
 
@@ -721,11 +823,18 @@ const controls = document.querySelector(’.controls’);
 if (mode === 'exercise') {
     controls.innerHTML = `
         <button class="btn btn-success" onclick="markSetComplete()">✓ Set Done</button>
+        <button class="btn btn-secondary" onclick="pauseWorkout()">⏸️ Pause</button>
         <button class="btn btn-danger" onclick="endWorkout()">End Workout</button>
     `;
 } else if (mode === 'rest') {
     controls.innerHTML = `
         <button class="btn" onclick="skipRest()">⏭️ Skip Rest</button>
+        <button class="btn btn-secondary" onclick="pauseWorkout()">⏸️ Pause</button>
+        <button class="btn btn-danger" onclick="endWorkout()">End Workout</button>
+    `;
+} else if (mode === 'paused') {
+    controls.innerHTML = `
+        <button class="btn btn-success" onclick="resumeWorkout()">▶️ Resume</button>
         <button class="btn btn-danger" onclick="endWorkout()">End Workout</button>
     `;
 }
@@ -810,8 +919,72 @@ function endWorkout() {
 if (confirm(‘Are you sure you want to end this workout early?’)) {
 stopTimer();
 appState.workoutInProgress = false;
+appState.pausedWorkout = null; // Clear any paused state
+saveState();
 showView(‘main’);
 }
+}
+
+function pauseWorkout() {
+// Save current workout state
+appState.pausedWorkout = {
+exerciseIndex: appState.currentExerciseIndex,
+setIndex: appState.currentSetIndex,
+isResting: appState.isResting,
+remainingTime: appState.timerSeconds,
+workoutData: appState.currentWorkoutData
+};
+
+```
+stopTimer();
+saveState();
+
+const display = document.getElementById('currentExerciseDisplay');
+display.innerHTML = `
+    <h3>⏸️ Workout Paused</h3>
+    <p style="font-size: 1.2rem; margin: 20px 0;">Take your time. Resume when ready.</p>
+`;
+
+document.getElementById('timerDisplay').textContent = '--:--';
+updateWorkoutButtons('paused');
+```
+
+}
+
+function resumeWorkout() {
+if (appState.pausedWorkout) {
+// Restore workout state
+appState.currentExerciseIndex = appState.pausedWorkout.exerciseIndex;
+appState.currentSetIndex = appState.pausedWorkout.setIndex;
+appState.isResting = appState.pausedWorkout.isResting;
+appState.currentWorkoutData = appState.pausedWorkout.workoutData;
+
+```
+    if (appState.isResting) {
+        // Resume rest period
+        appState.timerSeconds = appState.pausedWorkout.remainingTime;
+        updateTimerDisplay();
+        
+        const exercise = appState.currentWorkoutData.exercises[appState.currentExerciseIndex];
+        const totalSets = parseInt(exercise.sets) || 1;
+        
+        if (appState.currentSetIndex >= totalSets) {
+            // Was resting between exercises
+            startExerciseRest();
+        } else {
+            // Was resting between sets
+            startSetRest();
+        }
+    } else {
+        // Resume exercise
+        showCurrentExercise();
+    }
+    
+    appState.pausedWorkout = null;
+    saveState();
+}
+```
+
 }
 
 // Timer Functions
@@ -829,8 +1002,15 @@ if (appState.timerRunning) return;
 ```
 appState.timerRunning = true;
 
+// CRITICAL: Store when timer should end (timestamp-based)
+appState.timerEndTime = Date.now() + (appState.timerSeconds * 1000);
+
 appState.timerInterval = setInterval(() => {
-    appState.timerSeconds--;
+    // Calculate remaining time based on end time (not decrement)
+    const now = Date.now();
+    const remaining = Math.floor((appState.timerEndTime - now) / 1000);
+    
+    appState.timerSeconds = remaining;
     updateTimerDisplay();
     
     // When timer hits 0 during rest
@@ -851,6 +1031,7 @@ appState.timerInterval = setInterval(() => {
 
 function stopTimer() {
 appState.timerRunning = false;
+appState.timerEndTime = null;
 
 ```
 if (appState.timerInterval) {
@@ -1007,7 +1188,7 @@ const weekKey = `week${appState.currentWeek}`;
 const completed = appState.weeklyCompletion[weekKey] || {};
 
 ```
-const dayNames = ['Rest', 'Heavy Push', 'Legs', 'Rest/Mobility', 'Back+Core', 'Full Body', 'Rest'];
+const dayNames = ['Rest', 'Lower Strength', 'Upper Push', 'Athletic', 'Lower Power', 'Upper Mixed', 'Rest'];
 
 let html = '';
 for (let i = 0; i <= 6; i++) {
@@ -1083,4 +1264,4 @@ document.addEventListener(‘DOMContentLoaded’, init);
 } else {
 // DOM is already loaded
 init();
-}
+}}
