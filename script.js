@@ -1232,4 +1232,4 @@ document.addEventListener(‘DOMContentLoaded’, init);
 } else {
 // DOM is already loaded
 init();
-}}}}
+}
